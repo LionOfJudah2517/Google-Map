@@ -45,7 +45,7 @@ html, body {
 .hamburger {
     background-color:black;
     color:white;
-  
+    padding-left: 5%;
 }
 
 @media screen and (max-height: 450px) {
