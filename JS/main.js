@@ -21,10 +21,10 @@ function initMap() {
     zoom: 15
   });
 
-
+//keep the markers within view upon opening.
 var largeInfoWindow = new google.maps.InfoWindow();
 var bounds = new google.maps.LatLngBounds();
-
+//loop through to give all information for markers
 for (var i = 0; i < bostonLocations.length; i++){
   var position = bostonLocations[i].location;
   var title = bostonLocations[i].title;
@@ -33,17 +33,26 @@ for (var i = 0; i < bostonLocations.length; i++){
     position: position,
     title: title,
     animation: google.maps.Animation.DROP,
-    id: i
+    id: i,
+
   });
+  //display all current locations into the sidebar nav.
+  $("#mySidenav").append('<li><a>' + bostonLocations[i].title + "</a></li>");
+  $("#mySidenav li a").on('click', populateInfoWindow);
+
+
+
   markers.push(marker);
   bounds.extend(marker.position);
   marker.addListener('click', function(){
     populateInfoWindow(this, largeInfoWindow);
 
+
   });
+
 };
   map.fitBounds(bounds);
-
+//infowindow open and set title to infowindow
 function populateInfoWindow(marker, infowindow){
   if(infowindow.marker != marker){
     infowindow.marker = marker;
@@ -55,16 +64,10 @@ function populateInfoWindow(marker, infowindow){
     });
   }
 }
+
 };
 
-var sideBarTitles = function(){
-for(var i = 0; i < bostonLocations.length; i++){
-  $("#mySidenav").append("<li>" + bostonLocations[i].title + "</li>")
-}
-}();
-
 //Sidebar navigation JS
-
 function openNav() {
     document.getElementById("mySidenav").style.width = "250px";
 };
