@@ -44,28 +44,26 @@ function initMap() {
   });
 
 //keep the markers within view upon opening.
-var largeInfoWindow = new google.maps.InfoWindow();
+var infowindow = new google.maps.InfoWindow();
 var bounds = new google.maps.LatLngBounds();
 //loop through to give all information for markers
 for (var i = 0; i < bostonLocations.length; i++){
   var position = bostonLocations[i].location;
-  var title = bostonLocations[i].name;
+  var name = bostonLocations[i].name;
   var marker = new google.maps.Marker({
     map: map,
     position: position,
     name: name,
     animation: google.maps.Animation.DROP,
-    id: i,
+    id: i
 
   });
-  //display all current locations into the sidebar nav.
-  /*$("#mySidenav").append('<li><a>' + bostonLocations[i].title + "</a></li>");
-  $("#mySidenav li a").on('click', populateInfoWindow);*/
 
+//Push markers into the empty markers array
   markers.push(marker);
   bounds.extend(marker.position);
   marker.addListener('click', function(){
-    populateInfoWindow(this, largeInfoWindow);
+    populateInfoWindow(this, infowindow);
 
 
   });
