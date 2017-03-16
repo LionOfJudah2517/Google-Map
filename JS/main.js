@@ -1,3 +1,4 @@
+'use strict;'
 //This is JS file
 //Create a map variable
 var map;
@@ -6,12 +7,33 @@ var map;
 var markers = [];
 //Create an array of Objects to be used, minimum of 5.
 var bostonLocations = [
-  {title: 'Emmanuel College', location: {lat:42.341625, lng:-71.102528}},
-  {title: 'House of Blues', location: {lat:42.347328, lng:-71.095471}},
-  {title: 'Fenway Park', location: {lat:42.346497, lng:-71.097184}},
-  {title: 'Boston University', location: {lat:42.350164, lng:-71.104722}},
-  {title: 'Northeastern University', location: {lat:42.340068, lng:-71.088966}}
+  {name: 'Emmanuel College', location: {lat:42.341625, lng:-71.102528}},
+  {name: 'House of Blues', location: {lat:42.347328, lng:-71.095471}},
+  {name: 'Fenway Park', location: {lat:42.346497, lng:-71.097184}},
+  {name: 'Boston University', location: {lat:42.350164, lng:-71.104722}},
+  {name: 'Northeastern University', location: {lat:42.340068, lng:-71.088966}}
 ];
+
+
+//MODELVIEW
+var ModelView = function(){
+  var self = this;
+self.bosLocations = ko.observableArray([]);
+self.koMarker = ko.observableArray([]);
+//push the bostonLocations into an observableArray
+bostonLocations.forEach(function(bostonLocation){
+  self.bosLocations.push(bostonLocation);
+});
+
+markers.forEach(function(marker){
+  self.koMarker.push(marker)
+});
+
+
+};
+//Activate Knockout
+ko.applyBindings(new ModelView());
+
 //function to initialize the map
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -27,20 +49,18 @@ var bounds = new google.maps.LatLngBounds();
 //loop through to give all information for markers
 for (var i = 0; i < bostonLocations.length; i++){
   var position = bostonLocations[i].location;
-  var title = bostonLocations[i].title;
+  var title = bostonLocations[i].name;
   var marker = new google.maps.Marker({
     map: map,
     position: position,
-    title: title,
+    name: name,
     animation: google.maps.Animation.DROP,
     id: i,
 
   });
   //display all current locations into the sidebar nav.
-  $("#mySidenav").append('<li><a>' + bostonLocations[i].title + "</a></li>");
-  $("#mySidenav li a").on('click', populateInfoWindow);
-
-
+  /*$("#mySidenav").append('<li><a>' + bostonLocations[i].title + "</a></li>");
+  $("#mySidenav li a").on('click', populateInfoWindow);*/
 
   markers.push(marker);
   bounds.extend(marker.position);
@@ -52,11 +72,11 @@ for (var i = 0; i < bostonLocations.length; i++){
 
 };
   map.fitBounds(bounds);
-//infowindow open and set title to infowindow
+//infowindow open and set name to infowindow
 function populateInfoWindow(marker, infowindow){
   if(infowindow.marker != marker){
     infowindow.marker = marker;
-    infowindow.setContent('<div>' + marker.title + '</div>');
+    infowindow.setContent('<div>' + marker.name + '</div>');
     infowindow.open(map,marker);
 
     infowindow.addListener('closeclick', function(){
