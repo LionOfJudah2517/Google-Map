@@ -1,91 +1,127 @@
 'use strict;'
 //This is JS file
-//Create a map variable
+//Create variables
 var map;
+var markers;
 
-// Create a new blank array for all the listing markers.
-var markers = [];
 //Create an array of Objects to be used, minimum of 5.
 var bostonLocations = [
-  {name: 'Emmanuel College', location: {lat:42.341625, lng:-71.102528}},
-  {name: 'House of Blues', location: {lat:42.347328, lng:-71.095471}},
-  {name: 'Fenway Park', location: {lat:42.346497, lng:-71.097184}},
-  {name: 'Boston University', location: {lat:42.350164, lng:-71.104722}},
-  {name: 'Northeastern University', location: {lat:42.340068, lng:-71.088966}}
+  {name: 'Emmanuel College', lat:42.341625, lng:-71.102528},
+  {name: 'House of Blues', lat:42.347328, lng:-71.095471},
+  {name: 'Fenway Park', lat:42.346497, lng:-71.097184},
+  {name: 'Boston University', lat:42.350164, lng:-71.104722},
+  {name: 'Northeastern University', lat:42.340068, lng:-71.088966}
 ];
 
 
-//MODELVIEW
-var ModelView = function(){
-  var self = this;
-self.bosLocations = ko.observableArray([]);
-self.koMarker = ko.observableArray([]);
-//push the bostonLocations into an observableArray
-bostonLocations.forEach(function(bostonLocation){
-  self.bosLocations.push(bostonLocation);
+var LocationGenerator = function(map, locData){
+var self = this;
+
+this.map = map;
+this.name = locData.name;
+this.location = location;
+this.lat = locData.lat;
+this.lng = locData.lng;
+ // this.URL = URL;
+	//this.street = street;
+	//this.city = city;
+this.visible = ko.observable(true);
+
+
+  var clientID= 'MNULAPVKHSXV4G3UB3GZKJ2Z4F55JUOAXW0N5TR4SLJY0TSH';
+  var clientSecret = 'PGFSG12KQNWEG3G21J2BFJRVGDR5OMFXZTB2G2VPO5I0WEGD';
+
+	var foursquareURL = 'https://api.foursquare.com/v2/venues/search?ll='+ locData.lat + ',' + locData.lng + '&client_id=' + clientID + '&client_secret=' + clientSecret + '&v=20161016' + '&query=' + this.name;
+
+this.twitter;
+
+$.getJSON(foursquareURL,function(cat){
+      console.log(cat.response.venues[0].contact.twitter);
+
 });
 
-markers.forEach(function(marker){
-  self.koMarker.push(marker)
+
+
+//This info goes into the infowindow box
+this.contentString = `<h2>${this.name}</h3><h4>${this.lat}, ${this.lng}</h4><p>Twitter:${this.twitter}</p>`;
+
+
+this.infowindow = new google.maps.InfoWindow({
+  content: this.contentString
 });
+
+this.marker = new google.maps.Marker({
+          map: self.map,
+          position: new google.maps.LatLng(locData.lat, locData.lng),
+          name: locData.name
+});
+
+  this.showMarker = ko.computed(function() {
+		if(this.visible() === true) {
+			this.marker.setMap(map);
+		} else {
+			this.marker.setMap(null);
+		}
+		return true;
+	}, this);
+
+this.marker.addListener('click', function(){
+    self.infowindow.open(this.map, this);
+  });
+
+ this.clickMarker = function(){
+   google.maps.event.trigger(this.marker, 'click')
+ };
 
 
 };
-//Activate Knockout
-ko.applyBindings(new ModelView());
 
-//function to initialize the map
-function initMap() {
-  map = new google.maps.Map(document.getElementById('map'), {
+
+var MyAppView = function(){
+  var self = this;
+  this.bosLocationList = this.ko.observableArray([]);
+
+  this.bostonSearch = ko.observable('');
+
+  this.map = map = new google.maps.Map(document.getElementById('map'), {
     //Fenway Park Boston MA 42.3466764,-71.0994065,
     center: {lat: 42.3466764, lng: -71.0994065},
     //set zoom strength 1-21
-    zoom: 15
+    zoom: 13
   });
 
-//keep the markers within view upon opening.
-var infowindow = new google.maps.InfoWindow();
-var bounds = new google.maps.LatLngBounds();
-//loop through to give all information for markers
-for (var i = 0; i < bostonLocations.length; i++){
-  var position = bostonLocations[i].location;
-  var name = bostonLocations[i].name;
-  var marker = new google.maps.Marker({
-    map: map,
-    position: position,
-    name: name,
-    animation: google.maps.Animation.DROP,
-    id: i
-
+  bostonLocations.forEach(function(bostonLocation){
+    self.bosLocationList.push(new LocationGenerator(self.map, bostonLocation));
   });
 
-//Push markers into the empty markers array
-  markers.push(marker);
-  bounds.extend(marker.position);
-  marker.addListener('click', function(){
-    populateInfoWindow(this, infowindow);
 
+    this.bostonFilter = ko.computed(function() {
 
-  });
+      var filtered = self.bostonSearch().toString().toLowerCase();
+      if (!filtered) {
+			  self.bosLocationList().forEach(function(bostonLoc){
+				bostonLoc.visible(true);
+			});
 
-};
-  map.fitBounds(bounds);
-//infowindow open and set name to infowindow
-function populateInfoWindow(marker, infowindow){
-  if(infowindow.marker != marker){
-    infowindow.marker = marker;
-    infowindow.setContent('<div>' + marker.name + '</div>');
-    infowindow.open(map,marker);
-
-    infowindow.addListener('closeclick', function(){
-      infowindow.setMarker(null);
-    });
-  }
-}
+			return self.bosLocationList();
+		} else {
+			return ko.utils.arrayFilter(self.bosLocationList(), function(bostonLoc) {
+				var string = bostonLoc.location.name.toLowerCase();
+				var result = (string.search(filtered) >= 0);
+				bostonLoc.visible(result);
+				return result;
+			});
+		}
+	}, self);
 
 };
 
-//Sidebar navigation JS
+var myMap;
+var initMap = function(){
+  myMap = MyAppView;
+ko.applyBindings(myMap);
+};
+
 function openNav() {
     document.getElementById("mySidenav").style.width = "250px";
 };
