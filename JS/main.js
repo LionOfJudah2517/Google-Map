@@ -47,19 +47,14 @@ this.visible = ko.observable(true);
 //****** GET JSON REQUEST FOR FOURSQUARE SOCIAL MEDIA
 this.twitter;
   $.getJSON(foursquareURL).done(function(cat){
+    //********CONTENT THAT IS GOING TO FILL INFOWINDOW BOX.
        self.twitter = cat.response.venues[0].contact.twitter;
-
+       self.contentString = `<h2>${self.name}</h3><h4>${self.lat}, ${self.lng}</h4><p>Twitter: ${self.twitter}</p>`;
+       self.infowindow = new google.maps.InfoWindow({
+          content: self.contentString
     });
+  });
 
-console.log(this.twitter);
-
-//********CONTENT THAT IS GOING TO FILL INFOWINDOW BOX.
-this.contentString = `<h2>${this.name}</h3><h4>${this.lat}, ${this.lng}</h4><p>Twitter:${this.twitter}</p>`;
-
-//********INFOWINDOWS FOR EACH MARKER
-this.infowindow = new google.maps.InfoWindow({
-  content: this.contentString
-});
 
 //******** CREATE MARKERS WITH ESSENTIAL DATA FOR DISPLAY
 this.marker = new google.maps.Marker({
@@ -80,16 +75,14 @@ this.marker = new google.maps.Marker({
 	}, this);
 
 this.marker.addListener('click', function(){
-    self.infowindow.open(this.map, this);
+      self.infowindow.open(this.map, this);
   });
 
  this.clickMarker = function(){
    google.maps.event.trigger(this.marker, 'click')
  };
 
-
 };
-
 
 var MyAppView = function(){
   var self = this;
