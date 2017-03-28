@@ -177,7 +177,7 @@ var initMap = function() {
 
 */
 function openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
+    document.getElementById("mySidenav").style.width = "30%";
 };
 
 function closeNav() {

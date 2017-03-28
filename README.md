@@ -15,6 +15,14 @@ location is given at the bottom of the info window.
 
 ### Open the map
 
+Option 1.
+
 You can open the map with this link.
 
 https://lionofjudah2517.github.io/GoogleMapFinal
+
+Option 2.
+
+run `$git clone https://github.com/LionOfJudah2517/Google-Map-Final.git`
+
+then open map.html from file download.

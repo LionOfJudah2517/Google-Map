@@ -2,6 +2,7 @@
 
 <head>
     <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
 
 <body>
@@ -27,7 +28,7 @@
     <script src="node_modules/knockout/build/output/knockout-latest.js"></script>
     <script src="jquery/dist/jquery.min.js"></script>
     <script src="JS/main.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLr0qe_YL6ENIEIAY0Z0fMpjBUg6_NknY&v=3&callback=initMap">
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLr0qe_YL6ENIEIAY0Z0fMpjBUg6_NknY&v=3&callback=initMap" onError="errorAlert()">
     </script>
 </body>
 

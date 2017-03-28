@@ -22,7 +22,7 @@ html, body {
 }
 
 .sidenav a, .sidenav li{
-    padding: 8px 8px 8px 32px;
+    padding: 8px 8px 8px 0px;
     text-decoration: none;
     font-size: 25px;
     color: #818181;
@@ -48,7 +48,10 @@ html, body {
     padding-left: 5%;
 }
 
-@media screen and (max-height: 450px) {
+@media screen and (max-width: 450px) {
   .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav a {font-size: 12px;}
+  li {font-size:12px;}
+  #map{width:80%;}
+
 }
